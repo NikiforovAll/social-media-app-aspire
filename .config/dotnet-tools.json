@@ -1,0 +1,27 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "centralisedpackageconverter": {
+      "version": "1.0.52",
+      "commands": [
+        "central-pkg-converter"
+      ],
+      "rollForward": false
+    },
+    "csharpier": {
+      "version": "0.28.2",
+      "commands": [
+        "dotnet-csharpier"
+      ],
+      "rollForward": false
+    },
+    "dotnet-ef": {
+      "version": "8.0.6",
+      "commands": [
+        "dotnet-ef"
+      ],
+      "rollForward": false
+    }
+  }
+}
