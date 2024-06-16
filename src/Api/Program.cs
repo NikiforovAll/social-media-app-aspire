@@ -1,19 +1,15 @@
 using Api;
-using Api.Data;
+using Postgres;
 
 var builder = WebApplication.CreateBuilder(args);
-
 var services = builder.Services;
 
-builder.AddServiceDefaults();
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
-builder.AddNpgsqlDbContext<SocialMediaContext>("usersdb");
+builder.AddServiceDefaults();
+builder.AddNpgsqlDbContext<UsersDbContext>("usersdb");
 
 var app = builder.Build();
-
-app.UseSwagger();
-app.UseSwaggerUI();
 
 app.MapUsersEndpoints();
 app.MapDefaultEndpoints();

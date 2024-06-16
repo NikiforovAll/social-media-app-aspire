@@ -53,6 +53,7 @@ public class ElasticsearchResource
     /// </summary>
     public ParameterResource PasswordParameter { get; }
 
+
     /// <summary>
     /// Gets the connection string expression for the Elasticsearch
     /// </summary>
