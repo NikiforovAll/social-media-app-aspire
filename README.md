@@ -25,14 +25,13 @@ RESTful API specification:
    - **PUT /users/{id}:** Updates the user with the specified ID. Expects a JSON body with the new user details.
    - **DELETE /users/{id}:** Deletes the user with the specified ID.
 2. **Posts**
-   - **GET /posts:** Returns a list of all posts.
+   - **GET users/{id}/posts:** Returns a list of all posts.
    - **GET /posts/{id}:** Returns the post with the specified ID.
    - **POST /posts:** Creates a new post. Expects a JSON body with the post details.
-   - **PUT /posts/{id}:** Updates the post with the specified ID. Expects a JSON body with the new post details.
    - **DELETE /posts/{id}:** Deletes the post with the specified ID.
 3. **Follows**
     - **GET /users/{id}/follows:** Returns a list of all users that the user with the specified ID is following.
-    - **POST /users/{id}/follows:** Makes the user with the specified ID follow another user. Expects a JSON body with the ID of the user to follow.
+    - **PUT /users/{id}/follows/{followId}:** Makes the user with the specified ID follow another user. Expects a JSON body with the ID of the user to follow.
     - **DELETE /users/{id}/follows/{followId}:** Makes the user with the specified ID unfollow the user with the specified followId.
 4. **Likes**
    - **GET /posts/{id}/likes:** Returns a list of all users who have liked the post with the specified ID.
@@ -73,10 +72,9 @@ graph
     end
 
     subgraph Posts
-    GET_posts[GET /posts]
+    GET_posts[GET users/id/posts]
     GET_posts_id[GET /posts/id]
     POST_posts[POST /posts]
-    PUT_posts_id[PUT /posts/id]
     DELETE_posts_id[DELETE /posts/id]
     end
 

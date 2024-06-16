@@ -6,13 +6,11 @@ public class AppHostTests(AppHostFixture appHostFixture)
     : AppHostContext(appHostFixture)
 {
     [Fact]
-    public async Task GetApiResource_ReturnsOkStatusCode()
+    public async Task GetUsers_ReturnsOkStatusCode()
     {
         // Arrange
         // Act
-        var httpClient = this.AppHost.CreateHttpClient("api");
-
-        var response = await httpClient.GetAsync("/");
+        var response = await this.Client.GetAsync("/users");
 
         // Assert
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);

@@ -24,6 +24,7 @@ public class UsersDbContext(DbContextOptions<UsersDbContext> options)
         var faker = new Faker<User>()
             .UseSeed(1001)
             .RuleFor(u => u.UserId, f => f.IndexFaker + 1)
+            .RuleFor(u => u.Email, f => f.Person.Email)
             .RuleFor(u => u.Name, f => f.Person.FullName);
 
         const int numberOfUsers = 1000;

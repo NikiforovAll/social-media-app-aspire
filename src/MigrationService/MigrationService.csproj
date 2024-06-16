@@ -15,5 +15,6 @@
   <ItemGroup>
     <ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
     <ProjectReference Include="..\Data\Postgres\Postgres.csproj" />
+    <ProjectReference Include="..\Data\Mongo\Mongo.csproj" />
   </ItemGroup>
 </Project>

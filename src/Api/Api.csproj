@@ -1,6 +1,12 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
 	<ItemGroup>
+		<PackageReference Include="Aspire.RabbitMQ.Client" />
+		<PackageReference Include="MassTransit.RabbitMQ" />
 		<PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+		<PackageReference Include="Riok.Mapperly" />
 		<PackageReference Include="Swashbuckle.AspNetCore" />
 		<PackageReference Include="Aspire.MongoDB.Driver" />
 		<PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL" />
@@ -9,5 +15,6 @@
 	<ItemGroup>
 		<ProjectReference Include="..\ServiceDefaults\ServiceDefaults.csproj" />
 		<ProjectReference Include="..\Data\Postgres\Postgres.csproj" />
+		<ProjectReference Include="..\Data\Mongo\Mongo.csproj" />
 	</ItemGroup>
 </Project>

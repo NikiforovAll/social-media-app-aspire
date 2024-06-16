@@ -1,36 +1,52 @@
 namespace Api;
 
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http.HttpResults;
+using Api.Models;
+using MassTransit;
+using Mongo;
 
 public static class Extensions
 {
-    public static IEndpointRouteBuilder MapUsersEndpoints(
-        this IEndpointRouteBuilder app
+    public static IServiceCollection AddApplicationServices(
+        this IHostApplicationBuilder builder
     )
     {
-        var users = app.MapGroup("/users");
+        var services = builder.Services;
 
-        users
-            .MapGet("", ExecuteAsync)
-            .WithName("GetUsers")
-            .WithTags("Users")
-            .WithOpenApi(operation =>
-                new(operation)
+        services.Configure<MongoSettings>(
+            builder.Configuration.GetSection(nameof(MongoSettings))
+        );
+
+        services.AddSingleton<PostService>();
+
+        services.AddMassTransit(x =>
+            x.UsingRabbitMq(
+                (context, cfg) =>
                 {
-                    Summary = "Polymorphism via JsonDerivedTypeAttribute",
-                    Description =
-                        "Composite based on polymorphic serialization with attributes",
+                    cfg.Host(
+                        builder.Configuration.GetConnectionString("messaging")
+                    );
+
+                    cfg.ConfigureEndpoints(context);
                 }
-            );
+            )
+        );
 
-        return app;
+        return services;
     }
-
-    private static async Task<Results<Ok<User>, BadRequest>> ExecuteAsync(
-        HttpContext context
-    ) => throw new NotImplementedException();
 }
 
-internal class User { }
+public class PostDenormalizerConsumer(ILogger<PostDenormalizerConsumer> logger)
+    : IConsumer<PostCreated>
+{
+    private readonly ILogger<PostDenormalizerConsumer> logger = logger;
+
+    public Task Consume(ConsumeContext<PostCreated> context)
+    {
+        this.logger.LogInformation(
+            "Received Text: {Text}",
+            context.Message.Title
+        );
+
+        return Task.CompletedTask;
+    }
+}

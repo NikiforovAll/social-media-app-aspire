@@ -1,9 +1,11 @@
 namespace MigrationService;
 
 using System.Diagnostics;
+using Bogus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
+using Mongo;
 using OpenTelemetry.Trace;
 using Postgres;
 
@@ -26,11 +28,11 @@ public class ApiDbInitializer(
         try
         {
             using var scope = serviceProvider.CreateScope();
-            var dbContext =
-                scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+            await MigrateUsersDatabase(scope, stoppingToken);
 
-            await EnsureDatabaseAsync(dbContext, stoppingToken);
-            await RunMigrationAsync(dbContext, stoppingToken);
+            var posts = GeneratePosts();
+
+            await SeedPostsDatabaseAsync(scope, posts, stoppingToken);
         }
         catch (Exception ex)
         {
@@ -39,6 +41,55 @@ public class ApiDbInitializer(
         }
 
         hostApplicationLifetime.StopApplication();
+    }
+
+    private static List<Post> GeneratePosts()
+    {
+        const int numberOfUsers = 1000;
+
+        const int numberOfPosts = 10000;
+
+        var faker = new Faker<Post>()
+            .RuleFor(p => p.Title, f => f.Lorem.Sentence())
+            .RuleFor(p => p.Content, f => f.Lorem.Paragraph())
+            .RuleFor(p => p.CreatedAt, f => f.Date.Past())
+            .RuleFor(p => p.AuthorId, f => f.Random.Number(1, numberOfUsers));
+
+        var posts = faker.Generate(numberOfPosts);
+        return posts;
+    }
+
+    private static async Task SeedPostsDatabaseAsync(
+        IServiceScope scope,
+        IEnumerable<Post> posts,
+        CancellationToken stoppingToken
+    )
+    {
+        var postService =
+            scope.ServiceProvider.GetRequiredService<PostService>();
+
+        var empty = await postService.IsEmptyCollectionAsync();
+
+        if (!empty)
+        {
+            return;
+        }
+
+        await postService.EnsureIndexesCreatedAsync();
+
+        await postService.CreatePostsBulkAsync(posts, stoppingToken);
+    }
+
+    private static async Task MigrateUsersDatabase(
+        IServiceScope scope,
+        CancellationToken stoppingToken
+    )
+    {
+        var dbContext =
+            scope.ServiceProvider.GetRequiredService<UsersDbContext>();
+
+        await EnsureDatabaseAsync(dbContext, stoppingToken);
+        await RunMigrationAsync(dbContext, stoppingToken);
     }
 
     private static async Task EnsureDatabaseAsync(

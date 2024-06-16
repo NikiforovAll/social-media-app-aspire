@@ -5,6 +5,8 @@ using Postgres;
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<ApiDbInitializer>();
 
+builder.AddApplicationServices();
+builder.AddMongoDBClient("posts-db");
 builder.AddServiceDefaults();
 
 builder
@@ -15,7 +17,7 @@ builder
 
 builder.Services.AddDbContextPool<UsersDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("usersdb"),
+        builder.Configuration.GetConnectionString("users-db"),
         sqlOptions =>
             sqlOptions.EnableRetryOnFailure(
                 maxRetryCount: 10,
