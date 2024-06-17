@@ -45,9 +45,10 @@ public class PostService
         Post post,
         CancellationToken cancellationToken = default
     ) =>
-        await this.collection.InsertOneAsync(
+        await this.collection.ReplaceOneAsync(
+            x => x.Id == post.Id,
             post,
-            new InsertOneOptions(),
+            new ReplaceOptions { IsUpsert = true },
             cancellationToken
         );
 

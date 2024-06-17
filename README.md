@@ -1,4 +1,4 @@
-# Learning .NET Aspire by example: Social Media App using Postgres, MongoDb, Elasticsearch
+# Learning .NET Aspire by example: Social Media App using PostgreSQL, MongoDb, Elasticsearch [![Build](https://github.com/NikiforovAll/social-media-app-aspire/actions/workflows/ci.yml/badge.svg)](https://github.com/NikiforovAll/social-media-app-aspire/actions/workflows/ci.yml)
 
 The goal of this repository is to show how to build applications using .NET Aspire.
 

@@ -1,6 +1,7 @@
 namespace Api;
 
 using Api.Consumers;
+using Api.Models;
 using Elastic;
 using MassTransit;
 using Mongo;
@@ -24,6 +25,8 @@ public static class Extensions
         services.AddMassTransit(x =>
         {
             x.AddConsumer<PostCreatedConsumer>();
+            x.AddConsumer<LikedPostConsumer>();
+
             x.UsingRabbitMq(
                 (context, cfg) =>
                 {
