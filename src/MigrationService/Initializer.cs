@@ -2,14 +2,17 @@ namespace MigrationService;
 
 using System.Diagnostics;
 using Bogus;
+using Elastic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Mongo;
 using OpenTelemetry.Trace;
+using Polly;
+using Polly.Retry;
 using Postgres;
 
-public class ApiDbInitializer(
+public class Initializer(
     IServiceProvider serviceProvider,
     IHostApplicationLifetime hostApplicationLifetime
 ) : BackgroundService
@@ -33,6 +36,24 @@ public class ApiDbInitializer(
             var posts = GeneratePosts();
 
             await SeedPostsDatabaseAsync(scope, posts, stoppingToken);
+
+            var pipeline = new ResiliencePipelineBuilder()
+                .AddRetry(
+                    new RetryStrategyOptions
+                    {
+                        ShouldHandle =
+                            new PredicateBuilder().Handle<Exception>(),
+                        Delay = TimeSpan.FromSeconds(1),
+                        MaxRetryAttempts = 3,
+                        BackoffType = DelayBackoffType.Constant
+                    }
+                )
+                .Build();
+
+            await pipeline.ExecuteAsync(
+                async (ct) => await SeedSearchDatabaseAsync(scope, posts, ct),
+                stoppingToken
+            );
         }
         catch (Exception ex)
         {
@@ -41,6 +62,29 @@ public class ApiDbInitializer(
         }
 
         hostApplicationLifetime.StopApplication();
+    }
+
+    private static async Task SeedSearchDatabaseAsync(
+        IServiceScope scope,
+        List<Post> posts,
+        CancellationToken stoppingToken
+    )
+    {
+        var elasticClient =
+            scope.ServiceProvider.GetRequiredService<ElasticClient>();
+
+        await elasticClient.SetupAsync();
+
+        await elasticClient.CreateManyAsync(
+            posts.Select(x => new IndexedPost
+            {
+                AuthorId = x.AuthorId,
+                Content = x.Content,
+                Id = x.Id,
+                Title = x.Title
+            }),
+            stoppingToken
+        );
     }
 
     private static List<Post> GeneratePosts()
@@ -93,13 +137,13 @@ public class ApiDbInitializer(
     }
 
     private static async Task EnsureDatabaseAsync(
-        UsersDbContext dbContext,
+        UsersDbContext context,
         CancellationToken cancellationToken
     )
     {
-        var dbCreator = dbContext.GetService<IRelationalDatabaseCreator>();
+        var dbCreator = context.GetService<IRelationalDatabaseCreator>();
 
-        var strategy = dbContext.Database.CreateExecutionStrategy();
+        var strategy = context.Database.CreateExecutionStrategy();
         await strategy.ExecuteAsync(async () =>
         {
             // Create the database if it does not exist.

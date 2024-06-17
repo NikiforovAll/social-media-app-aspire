@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddApplicationServices();
 builder.AddServiceDefaults();
 builder.AddNpgsqlDbContext<UsersDbContext>("users-db");
+builder.AddElasticClientsElasticsearch("elasticsearch");
 builder.AddMongoDBClient("posts-db");
 builder.AddRabbitMQClient("messaging");
 

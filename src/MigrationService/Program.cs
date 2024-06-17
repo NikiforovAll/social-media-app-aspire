@@ -3,16 +3,17 @@ using MigrationService;
 using Postgres;
 
 var builder = Host.CreateApplicationBuilder(args);
-builder.Services.AddHostedService<ApiDbInitializer>();
+builder.Services.AddHostedService<Initializer>();
 
 builder.AddApplicationServices();
 builder.AddMongoDBClient("posts-db");
+builder.AddElasticClientsElasticsearch("elasticsearch");
 builder.AddServiceDefaults();
 
 builder
     .Services.AddOpenTelemetry()
     .WithTracing(tracing =>
-        tracing.AddSource(ApiDbInitializer.ActivitySourceName)
+        tracing.AddSource(Initializer.ActivitySourceName)
     );
 
 builder.Services.AddDbContextPool<UsersDbContext>(options =>

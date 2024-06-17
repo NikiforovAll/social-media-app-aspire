@@ -7,7 +7,7 @@ public class Post
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public string Id { get; set; } = default!;
 
     public int AuthorId { get; set; }
 

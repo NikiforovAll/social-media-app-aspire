@@ -1,6 +1,6 @@
 namespace Api;
 
-using Api.Models;
+using Elastic;
 using MassTransit;
 using Mongo;
 
@@ -18,7 +18,11 @@ public static class Extensions
 
         services.AddSingleton<PostService>();
 
+        services.AddSingleton<ElasticClient>();
+
         services.AddMassTransit(x =>
+        {
+            x.AddConsumer<PostDenormalizerConsumer>();
             x.UsingRabbitMq(
                 (context, cfg) =>
                 {
@@ -28,25 +32,9 @@ public static class Extensions
 
                     cfg.ConfigureEndpoints(context);
                 }
-            )
-        );
+            );
+        });
 
         return services;
-    }
-}
-
-public class PostDenormalizerConsumer(ILogger<PostDenormalizerConsumer> logger)
-    : IConsumer<PostCreated>
-{
-    private readonly ILogger<PostDenormalizerConsumer> logger = logger;
-
-    public Task Consume(ConsumeContext<PostCreated> context)
-    {
-        this.logger.LogInformation(
-            "Received Text: {Text}",
-            context.Message.Title
-        );
-
-        return Task.CompletedTask;
     }
 }

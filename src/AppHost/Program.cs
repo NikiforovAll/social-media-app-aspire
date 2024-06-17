@@ -23,23 +23,22 @@ var postsDb = builder
     .WithMongoExpress()
     .AddDatabase("posts-db");
 
-// username: elastic
-var postsSearchDb = builder
-    .AddElasticsearch("posts-elasticsearch", password)
+var elastic = builder
+    .AddElasticsearch("elasticsearch", password)
     .WithDataVolume();
 
 var api = builder
     .AddProject<Projects.Api>("api")
     .WithReference(usersDb)
     .WithReference(postsDb)
-    .WithReference(postsSearchDb)
+    .WithReference(elastic)
     .WithReference(redis)
-    .WithReference(messageBus)
-    .WithReplicas(1);
+    .WithReference(messageBus);
 
 var migrator = builder
     .AddProject<Projects.MigrationService>("migrator")
     .WithReference(postsDb)
+    .WithReference(elastic)
     .WithReference(usersDb);
 
 builder.Build().Run();

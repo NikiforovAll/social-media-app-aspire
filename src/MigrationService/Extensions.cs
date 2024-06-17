@@ -1,5 +1,6 @@
 namespace MigrationService;
 
+using Elastic;
 using Mongo;
 
 public static class Extensions
@@ -13,6 +14,8 @@ public static class Extensions
         services.Configure<MongoSettings>(
             builder.Configuration.GetSection(nameof(MongoSettings))
         );
+
+        services.AddSingleton<ElasticClient>();
 
         services.AddSingleton<PostService>();
 
