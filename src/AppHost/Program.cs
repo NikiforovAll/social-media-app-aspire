@@ -7,24 +7,24 @@ var password = builder.AddParameter("admin-password", secret: true);
 
 var redis = builder.AddRedis("cache");
 var messageBus = builder
-    .AddRabbitMQ("messaging", admin, password)
+    .AddRabbitMQ("messaging", admin, password, port: 5672)
     .WithDataVolume()
     .WithManagementPlugin();
 
 var usersDb = builder
     .AddPostgres("dbserver", pAdmin, password)
     .WithDataVolume()
-    .WithPgAdmin()
+    .WithPgAdmin(c => c.WithHostPort(5050))
     .AddDatabase("users-db");
 
 var postsDb = builder
     .AddMongoDB("posts-mongodb")
     .WithDataVolume()
-    .WithMongoExpress()
+    .WithMongoExpress(c => c.WithHostPort(8081))
     .AddDatabase("posts-db");
 
 var elastic = builder
-    .AddElasticsearch("elasticsearch", password)
+    .AddElasticsearch("elasticsearch", password, port: 9200)
     .WithDataVolume();
 
 var api = builder

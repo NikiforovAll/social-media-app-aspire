@@ -15,7 +15,8 @@ public static class ElasticsearchBuilderExtensions
         this IDistributedApplicationBuilder builder,
         string name,
         IResourceBuilder<ParameterResource>? password = null,
-        int? port = null
+        int? port = null,
+        int? internalPort = null
     )
     {
         var passwordParameter =
@@ -41,7 +42,7 @@ public static class ElasticsearchBuilderExtensions
             )
             .WithEndpoint(
                 targetPort: ElasticsearchInternalPort,
-                port: port,
+                port: internalPort,
                 name: ElasticsearchResource.InternalEndpointName
             )
             .WithEnvironment("discovery.type", "single-node")

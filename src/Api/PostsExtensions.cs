@@ -272,8 +272,7 @@ public static class PostsExtensions
             )
             .WithName("GetLeaderBoard")
             .WithTags(Tags)
-            .WithOpenApi()
-            .CacheOutput();
+            .WithOpenApi();
 
         return app;
     }

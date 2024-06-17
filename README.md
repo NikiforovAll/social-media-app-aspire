@@ -14,6 +14,115 @@ Components:
 
 For more information about implemented functionality see [REST API document](./docs/domain.md).
 
+## Run
+
+> 💡This project provides so called "`F5` experience", all you need to do is to clone it and run it. Migration and data seeding are performed automatically during startup as part of `MigrationService`.
+
+```bash
+ dotnet run --project ./src/AppHost/
+```
+
+Take a look at migration process:
+
+![alt](./assets/migration-trace.png)
+
+```bash
+❯ curl -X 'GET' 'http://localhost:51909/users/1' -s | jq
+# {
+#   "user-id": 1,
+#   "name": "Jennie Klocko",
+#   "email": "Jennie_Klocko@gmail.com",
+#   "followers-count": 2,
+#   "following-count": 2
+# }
+```
+
+```bash
+❯ curl -X 'GET' 'http://localhost:51909/users/1/followers' -s | jq
+# [
+#   {
+#     "user-id": 522,
+#     "name": "Jerome Kilback",
+#     "email": "Jerome_Kilback12@gmail.com"
+#   },
+#   {
+#     "user-id": 611,
+#     "name": "Ernestine Schiller",
+#     "email": "Ernestine_Schiller@hotmail.com"
+#   }
+# ]
+```
+
+```bash
+❯ curl -X 'GET' 'http://localhost:51909/users/1/posts' -s | jq '.[] | {title, likes}'
+# {
+#   "title": "Ipsam cumque labore sapiente ea.",
+#   "likes": [
+#     87,
+#     44,
+#     15,
+#   ]
+# }
+# {
+#   "title": "Impedit commodi delectus fugit exercitationem.",
+#   "likes": [
+#   ]
+# }
+# {
+#   "title": "Qui officia quos.",
+#   "likes": [
+#     65,
+#     1
+#   ]
+# }
+```
+
+```bash
+❯ curl -X 'POST' 'http://localhost:51909/posts/analytics/leaderboard' -s | jq
+# [
+#   {
+#     "user-id": 98,
+#     "name": "Ian Paucek",
+#     "email": "Ian_Paucek@gmail.com",
+#     "like-count": 202
+#   },
+#   {
+#     "user-id": 42,
+#     "name": "Neil Ryan",
+#     "email": "Neil_Ryan@hotmail.com",
+#     "like-count": 194
+#   },
+#   {
+#     "user-id": 49,
+#     "name": "Bruce Botsford",
+#     "email": "Bruce.Botsford75@yahoo.com",
+#     "like-count": 179
+#   },
+#   {
+#     "user-id": 11,
+#     "name": "Angel Gaylord",
+#     "email": "Angel_Gaylord@gmail.com",
+#     "like-count": 168
+#   },
+#   {
+#     "user-id": 62,
+#     "name": "Ora Smith",
+#     "email": "Ora_Smith@yahoo.com",
+#     "like-count": 167
+#   }
+# ]
+```
+
+Some of the requests are cached based on [Output caching middleware in ASP.NET Core](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/output). For example:
+
+First hit:
+
+![alt](./assets/get-users.png)
+
+Subsequent hit:
+
+![alt](./assets/get-users-cached.png)
+
 ## Databases
 
 The reasoning for each type of data storage:

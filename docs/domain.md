@@ -37,7 +37,7 @@ RESTful API specification:
    - **GET /search/users?query={query}:** Searches for users based on the query string.
    - **GET /search/posts?query={query}:** Searches for posts based on the query string.
 6. **Analytics**
-   - **GET /analytics/likes:** Returns analytics data about likes, such as the total number of likes, the average number of likes per post, etc.
+   - **GET /analytics/*:** Returns analytics data about likes, such as leaderboard.
 
 This API allows for full CRUD operations on users and posts, as well as following/unfollowing users and liking/unliking posts. It also provides search functionality for users and posts, and analytics data about users and posts.
 
@@ -91,6 +91,6 @@ graph
     end
 
     subgraph Analytics
-    GET_analytics_users[GET /analytics/likes]
+    GET_analytics_users[GET /analytics/leaderboard]
     end
 ```
