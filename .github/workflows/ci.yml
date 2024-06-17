@@ -1,0 +1,57 @@
+name: .NET CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.gitignore"
+      - "**/*.gitattributes"
+
+  pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "**/*.gitignore"
+      - "**/*.gitattributes"
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        sdk: [sdk-baseline, sdk-global-json]
+        exclude:
+          - os: windows-latest
+            sdk: sdk-baseline
+    runs-on: ${{ matrix.os }}
+    name: Build & Test Samples
+    env:
+      DOTNET_BASELINE_SDK_VERSION: '8.0.2xx'
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      DOTNET_NOLOGO: true
+      DOTNET_MULTILEVEL_LOOKUP: false
+      DOTNET_INSTALL_DIR: ${{ matrix.os == 'ubuntu-latest' && '' || 'dotnet' }}
+      ASPIRE_ALLOW_UNSECURED_TRANSPORT: true
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: "Install .NET SDK (baseline: ${{ env.DOTNET_BASELINE_SDK_VERSION }})"
+      if: matrix.os == 'ubuntu-latest' && matrix.sdk == 'sdk-baseline'
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_BASELINE_SDK_VERSION }}
+
+    - name: "Install .NET SDK (global.json)"
+      if: matrix.sdk == 'sdk-global-json'
+      uses: actions/setup-dotnet@v4
+      with:
+        global-json-file: ${{ matrix.os == 'ubuntu-latest' && './global.json' || '.\global.json' }}
+
+    - name: "Install Aspire"
+      run: dotnet workload update & dotnet workload install aspire
+
+    - name: Build
+      run: dotnet build
+

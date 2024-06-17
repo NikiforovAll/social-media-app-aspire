@@ -1,5 +1,6 @@
 namespace Api;
 
+using Api.Consumers;
 using Elastic;
 using MassTransit;
 using Mongo;
@@ -22,7 +23,7 @@ public static class Extensions
 
         services.AddMassTransit(x =>
         {
-            x.AddConsumer<PostDenormalizerConsumer>();
+            x.AddConsumer<PostCreatedConsumer>();
             x.UsingRabbitMq(
                 (context, cfg) =>
                 {

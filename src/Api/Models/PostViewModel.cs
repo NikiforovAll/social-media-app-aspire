@@ -6,9 +6,11 @@ public class PostViewModel
 
     public int AuthorId { get; set; }
 
-    public string Title { get; set; } = null!;
+    public string Title { get; set; } = default!;
 
-    public string Content { get; set; } = null!;
+    public string Content { get; set; } = default!;
 
     public DateTimeOffset CreatedAt { get; set; }
+
+    public IList<int> Likes { get; set; } = default!;
 }

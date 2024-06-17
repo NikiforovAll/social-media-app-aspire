@@ -1,6 +1,6 @@
-namespace Api.Models;
+namespace Elastic;
 
-public class PostCreated
+public class IndexedPost
 {
     public string Id { get; set; } = default!;
 

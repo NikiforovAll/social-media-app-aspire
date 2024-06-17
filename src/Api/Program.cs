@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Api;
 using Postgres;
 
@@ -12,6 +13,14 @@ builder.AddRabbitMQClient("messaging");
 var services = builder.Services;
 services.AddEndpointsApiExplorer();
 services.AddSwaggerGen();
+
+services.ConfigureHttpJsonOptions(json =>
+{
+    json.SerializerOptions.PropertyNamingPolicy =
+        JsonNamingPolicy.KebabCaseLower;
+    json.SerializerOptions.WriteIndented = true;
+});
+
 builder.AddRedisOutputCache("cache");
 
 var app = builder.Build();
@@ -21,6 +30,13 @@ app.UseSwaggerUI();
 
 app.MapUsersEndpoints();
 app.MapPostsEndpoints();
+
+if (builder.Environment.IsDevelopment())
+{
+    app.MapGet("/", () => Results.Redirect("/swagger"))
+        .ExcludeFromDescription();
+}
+
 app.MapDefaultEndpoints();
 app.UseOutputCache();
 

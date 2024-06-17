@@ -73,6 +73,18 @@ public class PostService
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IEnumerable<Post>> GetPostsByIds(
+        IEnumerable<string> ids,
+        CancellationToken cancellationToken
+    )
+    {
+        var filter = Builders<Post>.Filter.In(x => x.Id, ids);
+
+        return await this
+            .collection.Find(filter)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<Post?> GetPostByIdAsync(
         string id,
         CancellationToken cancellationToken = default

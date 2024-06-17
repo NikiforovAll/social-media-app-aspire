@@ -15,6 +15,8 @@ public class Post
 
     public string Content { get; set; } = null!;
 
+    public string ExternalId { get; set; } = default!;
+
     [BsonElement("CreatedAt")]
     [BsonRepresentation(BsonType.DateTime)]
     public DateTimeOffset CreatedAt { get; set; }
@@ -22,12 +24,16 @@ public class Post
     [BsonElement("Likes")]
     public List<int> Likes { get; private set; } = [];
 
-    public void Like(int userId)
+    public bool Like(int userId)
     {
         if (!this.Likes.Contains(userId))
         {
             this.Likes.Add(userId);
+
+            return true;
         }
+
+        return false;
     }
 
     public void RemoveLike(int userId) => this.Likes.Remove(userId);

@@ -1,0 +1,19 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+  "name": "CSharp & Aspire",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:1-8.0-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/elanhasson/devcontainer-features/dotnet-aspire-daily:1": {}
+  },
+  "postCreateCommand": "dotnet tool restore",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ria.elastic"
+      ]
+    }
+  }
+}
